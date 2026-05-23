@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8" /><title>Todo</title></head>
+<body>
+  <h1>New todo</h1>
+  <form id="add">
+    <input type="text" name="title" placeholder="title" required />
+    <textarea name="body" placeholder="body" required></textarea>
+    <button type="submit">Add</button>
+  </form>
+  <div id="status"></div>
+  <script>
+    document.getElementById('add').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const r = await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: fd.get('title'),
+          body: fd.get('body'),
+        }),
+      });
+      const text = await r.text();
+      if (!r.ok) {
+        console.error('add todo failed: ' + r.status + ' ' + text + '; check fields in public/index.html and routes/todos.js');
+        document.getElementById('status').textContent = 'Error: ' + r.status;
+      } else {
+        document.getElementById('status').textContent = 'Added';
+      }
+    });
+  </script>
+</body>
+</html>
